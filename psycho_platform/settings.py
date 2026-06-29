@@ -1,6 +1,8 @@
 from pathlib import Path
 import dj_database_url
 
+import cloudinary
+
 BASE_DIR = Path(__file__).resolve().parent.parent 
 print("BASE_DIR:", BASE_DIR)
 print("Templates path:", BASE_DIR / 'templates')
@@ -21,7 +23,9 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'cloudinary_storage'
     'django.contrib.staticfiles',
+    'cloudinary'
     'ckeditor',
     'embed_video',
     'core',
@@ -201,3 +205,13 @@ LOGGING = {
 
 # Añade al final del archivo
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
+    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
+}
+
+# Esto hace que todos los uploads vayan a Cloudinary
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
