@@ -24,8 +24,8 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'cloudinary_storage',
-    'django.contrib.staticfiles',
+    'django.contrib.staticfiles',  # ← primero staticfiles
+    'cloudinary_storage',          # ← después
     'cloudinary',
     'ckeditor',
     'embed_video',
@@ -206,7 +206,7 @@ LOGGING = {
 
 # Añade al final del archivo
 # Pon esto:
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
 CLOUDINARY_STORAGE = {
