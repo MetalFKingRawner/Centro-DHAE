@@ -7,9 +7,9 @@ print("Templates path:", BASE_DIR / 'templates')
 
 SECRET_KEY = 'django-insecure-76l$=a@sb41v+p3*w69w(ix-c5zjgit)@#!r%pwb=j98vs4(vm'
 
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -182,3 +182,20 @@ DEFAULT_FROM_EMAIL = 'no-reply@centrodhae.com'
 ADMIN_EMAIL = 'admin@centrodhae.com'   # cámbialo por el email real
 
 SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+    },
+}
+
+# Añade al final del archivo
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
