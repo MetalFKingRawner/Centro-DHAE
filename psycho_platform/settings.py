@@ -205,7 +205,8 @@ LOGGING = {
 }
 
 # Añade al final del archivo
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+# Pon esto:
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 
 CLOUDINARY_STORAGE = {
