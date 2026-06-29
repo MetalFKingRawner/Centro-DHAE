@@ -1,0 +1,548 @@
+{% extends "courses/base_cursos.html" %}
+{% load static %}
+
+{% block title %}Cursos — Centro DHAE{% endblock %}
+
+{% block extra_css %}
+  <style>
+    /* ── PAGE HERO ── */
+    .page-hero {
+      padding: 72px 6% 64px;
+      background: var(--cream);
+      position: relative; overflow: hidden;
+    }
+    .page-hero::before {
+      content: ''; position: absolute; top: -120px; right: -100px;
+      width: 560px; height: 560px; border-radius: 50%;
+      background: radial-gradient(circle, var(--accent2) 0%, transparent 65%);
+      opacity: .32; pointer-events: none;
+    }
+    .page-hero::after {
+      content: ''; position: absolute; bottom: -80px; left: 2%;
+      width: 300px; height: 300px; border-radius: 50%;
+      background: radial-gradient(circle, var(--sand) 0%, transparent 68%);
+      opacity: .45; pointer-events: none;
+    }
+    .page-hero-layout { position: relative; z-index: 2; display: flex; align-items: center; gap: 56px; }
+    .page-hero-inner { flex: 0 0 auto; min-width: 0; max-width: 520px; }
+
+    /* Contenedor externo que sostiene los elementos decorativos */
+    .page-hero-image-wrap {
+      flex: 1 1 0;
+      min-width: 0;
+      position: relative;
+      padding: 16px 0 20px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Bloque decorativo dorado detrás y abajo-izquierda */
+    .page-hero-image-wrap::before {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 88%; height: 88%;
+      border-radius: 28px;
+      background: linear-gradient(135deg, var(--sand) 0%, color-mix(in srgb, var(--accent) 30%, var(--sand)) 100%);
+      opacity: .45;
+      z-index: 0;
+    }
+
+    /* Punto decorativo arriba-derecha */
+    .page-hero-image-wrap::after {
+      content: '';
+      position: absolute;
+      top: -12px; right: -12px;
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--accent2) 0%, transparent 70%);
+      opacity: .55;
+      z-index: 0;
+    }
+
+    /* La imagen en sí */
+    .page-hero-image {
+      position: relative; z-index: 1;
+      width: 100%; max-width: 480px;
+      aspect-ratio: 4/3;
+      border-radius: 22px;
+      overflow: hidden;
+      background: linear-gradient(135deg, var(--warm) 0%, var(--cream) 100%);
+      border: 1px solid rgba(216,200,152,.5);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow:
+        0 20px 48px -8px rgba(32,24,8,.18),
+        0 0 0 1px rgba(255,255,255,.6) inset;
+    }
+    .page-hero-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    .page-hero-image-placeholder {
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+      opacity: .45;
+    }
+    .page-hero-image-placeholder .ph-icon { font-size: 3.2rem; }
+    .page-hero-image-placeholder .ph-text {
+      font-size: .72rem; font-weight: 500; letter-spacing: .08em;
+      text-transform: uppercase; color: var(--primary);
+    }
+    @media (max-width: 900px) {
+      .page-hero-layout { flex-direction: column; }
+      .page-hero-image-wrap { flex: none; width: 100%; max-width: 100%; padding: 0 0 16px 16px; justify-content: flex-start; }
+      .page-hero-image { max-width: 100%; aspect-ratio: 16/7; }
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 5px 16px; border-radius: 999px;
+      background: var(--warm); border: 1px solid var(--sand);
+      font-size: .72rem; font-weight: 500;
+      color: var(--primary); letter-spacing: .1em; text-transform: uppercase;
+      margin-bottom: 22px;
+    }
+    .hero-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); display: inline-block; }
+    .page-hero h1 {
+      font-family: var(--ff-display);
+      font-size: clamp(2rem, 4.2vw, 3.2rem);
+      font-weight: 300; color: var(--dark);
+      line-height: 1.15; margin-bottom: 18px; letter-spacing: -.01em;
+    }
+    .page-hero > .page-hero-inner > p {
+      font-size: .94rem; line-height: 1.9;
+      color: color-mix(in srgb, var(--primary) 55%, var(--ink));
+      max-width: 520px;
+    }
+    .page-hero-stats {
+      display: flex; gap: 36px; margin-top: 36px; padding-top: 28px;
+      border-top: 1px solid var(--sand);
+    }
+    .page-hero-stat-val {
+      font-family: var(--ff-display); font-size: 1.8rem; font-weight: 600;
+      color: var(--dark); line-height: 1;
+    }
+    .page-hero-stat-lbl { font-size: .72rem; color: var(--accent); font-weight: 500; letter-spacing: .05em; text-transform: uppercase; margin-top: 4px; }
+
+    /* ── COURSES SECTION ── */
+    .cursos-section {
+      padding: 72px 6% 96px;
+      background: var(--warm);
+      position: relative; overflow: hidden;
+    }
+    .cursos-section::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23a08848' fill-opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='1.5'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      pointer-events: none;
+    }
+    .cursos-toolbar {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 16px;
+      margin-bottom: 40px;
+      position: relative; z-index: 1;
+    }
+    .cursos-count { font-size: .84rem; color: color-mix(in srgb, var(--primary) 50%, var(--ink)); }
+    .cursos-count strong { font-weight: 500; color: var(--dark); }
+
+    /* ── GRID ── */
+    .cur-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 26px;
+      position: relative; z-index: 1;
+    }
+
+    /* ── CARD ── */
+    .cur-card {
+      background: var(--white);
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(216,200,152,.4);
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,.05), 0 8px 10px -6px rgba(0,0,0,.02);
+      transition: transform .3s ease, box-shadow .3s ease;
+      display: flex; flex-direction: column;
+    }
+    .cur-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 22px 48px -8px rgba(0,0,0,.1), 0 12px 20px -8px rgba(0,0,0,.06);
+    }
+
+    /* Imagen */
+    .cur-thumb {
+      position: relative;
+      height: 200px;
+      overflow: hidden;
+      background: var(--warm);
+      flex-shrink: 0;
+    }
+    .cur-thumb img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform .4s ease;
+    }
+    .cur-card:hover .cur-thumb img { transform: scale(1.04); }
+
+    /* Placeholder sin imagen */
+    .cur-thumb-placeholder {
+      width: 100%; height: 100%;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 10px;
+      background: linear-gradient(135deg, var(--warm) 0%, var(--cream) 100%);
+    }
+    .cur-thumb-placeholder .ph-icon { font-size: 3rem; opacity: .5; }
+    .cur-thumb-placeholder .ph-text {
+      font-size: .72rem; font-weight: 500; letter-spacing: .08em;
+      text-transform: uppercase; color: var(--primary); opacity: .6;
+    }
+
+    /* Cuerpo */
+    .cur-body {
+      padding: 22px 24px 18px;
+      display: flex; flex-direction: column;
+      flex: 1;
+    }
+    .cur-instructor {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: .72rem; font-weight: 500;
+      letter-spacing: .06em; text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+    .cur-instructor i { font-size: .75rem; }
+    .cur-body h3 {
+      font-family: var(--ff-display);
+      font-size: 1.25rem; font-weight: 400;
+      color: var(--dark);
+      margin-bottom: 10px;
+      line-height: 1.3;
+    }
+    .cur-body p {
+      font-size: .83rem; line-height: 1.75;
+      color: #4b5563;
+      margin-bottom: 0;
+      flex: 1;
+    }
+
+    /* Pie de tarjeta */
+    .cur-foot {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 24px 20px;
+      border-top: 1px solid var(--warm);
+      margin-top: auto;
+      flex-shrink: 0;
+    }
+    .cur-meta-info { display: flex; flex-direction: column; gap: 2px; }
+    .cur-meta-label {
+      font-size: .68rem; font-weight: 500;
+      letter-spacing: .06em; text-transform: uppercase;
+      color: var(--accent); opacity: .8;
+    }
+    .cur-meta-val { font-size: .8rem; color: color-mix(in srgb, var(--primary) 50%, var(--ink)); }
+
+    /* Botón Ver detalles */
+    .btn-ver {
+      display: inline-block;
+      padding: 9px 22px;
+      border-radius: 40px;
+      background: transparent;
+      border: 1px solid var(--primary);
+      color: var(--primary);
+      font-family: var(--ff-body);
+      font-size: .8rem; font-weight: 500;
+      text-decoration: none;
+      transition: background .2s, color .2s, transform .2s;
+      white-space: nowrap;
+    }
+    .btn-ver:hover, .btn-ver:focus {
+      background: var(--primary);
+      color: #fff;
+      transform: translateY(-1px);
+      outline: none;
+    }
+    .btn-ver:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 3px;
+    }
+
+    /* ── ESTADO VACÍO ── */
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 80px 24px;
+      background: var(--white);
+      border-radius: 20px;
+      border: 1px dashed var(--sand);
+    }
+    .empty-state .empty-icon { font-size: 3.5rem; margin-bottom: 20px; opacity: .5; }
+    .empty-state h3 {
+      font-family: var(--ff-display);
+      font-size: 1.6rem; font-weight: 300;
+      color: var(--dark); margin-bottom: 10px;
+    }
+    .empty-state p {
+      font-size: .88rem; color: color-mix(in srgb, var(--primary) 40%, var(--ink));
+      line-height: 1.8; max-width: 360px; margin: 0 auto;
+    }
+
+    /* ── CTA BANNER ── */
+    .cta-banner-wrap {
+      padding: 88px 6%;
+      background: var(--cream);
+    }
+    .cta-banner {
+      position: relative; overflow: hidden;
+      background: linear-gradient(135deg, var(--ink) 0%, var(--dark) 130%);
+      border-radius: 28px;
+      padding: 56px 60px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 48px;
+      box-shadow: 0 24px 60px -16px rgba(32,24,8,.35);
+    }
+    .cta-banner::before {
+      content: ''; position: absolute; top: -90px; right: -60px;
+      width: 320px; height: 320px; border-radius: 50%;
+      background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
+      opacity: .25; pointer-events: none;
+    }
+    .cta-banner::after {
+      content: ''; position: absolute; bottom: -110px; left: 12%;
+      width: 260px; height: 260px; border-radius: 50%;
+      background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+      opacity: .18; pointer-events: none;
+    }
+    .cta-text { position: relative; z-index: 1; flex: 1 1 380px; min-width: 0; }
+    .cta-banner .sec-tag { color: var(--sand); }
+    .cta-banner h2 {
+      font-family: var(--ff-display);
+      font-size: clamp(1.8rem, 3.2vw, 2.6rem); font-weight: 300; color: #f9f4ed;
+      line-height: 1.2; margin-bottom: 12px;
+    }
+    .cta-banner h2 em { color: var(--sand); }
+    .cta-banner p { font-size: .9rem; line-height: 1.85; color: rgba(245,238,222,.7); max-width: 460px; }
+    .cta-divider {
+      position: relative; z-index: 1;
+      width: 1px; align-self: stretch;
+      background: linear-gradient(to bottom, transparent, rgba(216,200,152,.3), transparent);
+      flex-shrink: 0;
+    }
+    .cta-actions {
+      position: relative; z-index: 1;
+      display: flex; flex-direction: column; gap: 14px;
+      align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .cta-actions .btn-gold,
+    .cta-actions .btn-outline {
+      text-align: center; width: 240px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .cta-actions .btn-outline {
+      border-color: rgba(216,200,152,.4); color: var(--sand); background: transparent;
+    }
+    .cta-actions .btn-outline:hover {
+      border-color: var(--sand); background: rgba(216,200,152,.1); color: #f9f4ed;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1024px) {
+      .cur-grid { grid-template-columns: repeat(2, 1fr); }
+      .cta-banner {
+        flex-direction: column;
+        text-align: center;
+        padding: 48px 36px;
+      }
+      .cta-text { flex-basis: auto; }
+      .cta-banner p { max-width: 100%; margin-inline: auto; }
+      .cta-divider {
+        width: 80%; height: 1px; align-self: center;
+        background: linear-gradient(to right, transparent, rgba(216,200,152,.3), transparent);
+      }
+      .cta-actions { width: 100%; }
+    }
+    @media (max-width: 768px) {
+      .cur-grid { grid-template-columns: 1fr; }
+      .page-hero-stats { gap: 20px; flex-wrap: wrap; }
+      .cta-banner-wrap { padding: 60px 5%; }
+      .cta-banner { padding: 44px 28px; border-radius: 22px; gap: 32px; }
+      .cta-actions { width: 100%; max-width: 320px; margin: 0 auto; }
+      .cta-actions .btn-gold,
+      .cta-actions .btn-outline { width: 100%; }
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+
+  <!-- ── PAGE HERO ── -->
+  <section class="page-hero">
+    <div class="page-hero-layout">
+
+      <div class="page-hero-inner">
+        <div class="hero-badge">
+          <span class="dot"></span>
+          Formación continua
+        </div>
+        <h1>
+          Explora nuestros <em>cursos</em><br>especializados
+        </h1>
+        <p>
+          Psicología aplicada, crecimiento personal e inteligencia emocional.
+          Aprende con expertos certificados a tu propio ritmo, desde donde estés.
+        </p>
+        <div class="page-hero-stats">
+          <div>
+            <div class="page-hero-stat-val">{{ cursos|length }}+</div>
+            <div class="page-hero-stat-lbl">Cursos disponibles</div>
+          </div>
+          <div>
+            <div class="page-hero-stat-val">100%</div>
+            <div class="page-hero-stat-lbl">En línea</div>
+          </div>
+          <div>
+            <div class="page-hero-stat-val">Expertos</div>
+            <div class="page-hero-stat-lbl">Instructores certificados</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Imagen decorativa / portada del hero -->
+      <div class="page-hero-image-wrap">
+        <div class="page-hero-image">
+          <img src="{% static 'img/banner/emocional.jpg' %}" alt="Psicología Organizacional">
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── LISTA DE CURSOS ── -->
+  <section class="cursos-section">
+
+    <div class="cursos-toolbar">
+      <span class="sec-tag">Catálogo completo</span>
+      {% if cursos %}
+        <span class="cursos-count">
+          Mostrando <strong>{{ cursos|length }}</strong>
+          curso{% if cursos|length != 1 %}s{% endif %} publicado{% if cursos|length != 1 %}s{% endif %}
+        </span>
+      {% endif %}
+    </div>
+
+    <div class="cur-grid">
+
+      {% for curso in cursos %}
+      <article class="cur-card" aria-label="Curso: {{ curso.titulo }}">
+
+        <!-- Imagen de portada -->
+        <div class="cur-thumb">
+          {% if curso.imagen %}
+            <img
+              src="{{ curso.imagen.url }}"
+              alt="{{ curso.titulo }}"
+              loading="lazy"
+            />
+          {% else %}
+            <div class="cur-thumb-placeholder" aria-hidden="true">
+              <span class="ph-icon">📘</span>
+              <span class="ph-text">Sin portada</span>
+            </div>
+          {% endif %}
+        </div>
+
+        <!-- Cuerpo -->
+        <div class="cur-body">
+
+          <!-- Instructor -->
+          <span class="cur-instructor">
+            <i class="fas fa-user-tie" aria-hidden="true"></i>
+            {% if curso.instructor %}
+              {{ curso.instructor }}
+            {% else %}
+              Instructor por asignar
+            {% endif %}
+          </span>
+
+          <!-- Título -->
+          <h3>{{ curso.titulo }}</h3>
+
+          <!-- Descripción corta sin HTML, truncada a 120 caracteres -->
+          <p>{{ curso.descripcion|striptags|truncatechars:120 }}</p>
+
+        </div>
+
+        <!-- Pie de tarjeta -->
+        <div class="cur-foot">
+          <div class="cur-meta-info">
+            <span class="cur-meta-label">Publicado</span>
+            <span class="cur-meta-val">{{ curso.creado_en|date:"d M Y" }}</span>
+          </div>
+          <a
+            href="{% url 'courses:curso_detail' slug=curso.slug %}"
+            class="btn-ver"
+            aria-label="Ver detalles del curso: {{ curso.titulo }}"
+          >
+            Ver detalles
+          </a>
+        </div>
+
+      </article>
+      {% empty %}
+
+      <!-- Estado vacío -->
+      <div class="empty-state" role="status" aria-live="polite">
+        <div class="empty-icon" aria-hidden="true">🌱</div>
+        <h3>Próximamente más cursos</h3>
+        <p>
+          Estamos preparando contenido de calidad para ti.
+          Vuelve pronto o suscríbete a nuestro boletín para ser el primero en enterarte.
+        </p>
+      </div>
+
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- ── CTA BANNER ── -->
+  <section class="cta-banner-wrap" id="contacto">
+    <div class="cta-banner">
+      <div class="cta-text">
+        <span class="sec-tag">¿Tienes dudas sobre un curso?</span>
+        <h2>Contáctanos y te ayudamos a elegir el programa <em>ideal</em></h2>
+        <p>
+          Nuestro equipo puede orientarte sobre contenido, modalidad y próximas
+          fechas de inicio. Sin compromiso.
+        </p>
+      </div>
+      <div class="cta-divider" aria-hidden="true"></div>
+      <div class="cta-actions">
+        <a href="https://wa.me/529511353324" target="_blank" rel="noopener noreferrer" class="btn-gold">
+          <i class="fab fa-whatsapp" style="margin-right:8px"></i>Escribir por WhatsApp
+        </a>
+        <a href="mailto:centrodhae@gmail.com" class="btn-outline">
+          <i class="fas fa-envelope" style="margin-right:8px"></i>Enviar un correo
+        </a>
+      </div>
+    </div>
+  </section>
+
+{% endblock %}
+
+{% block extra_js %}
+  <script>
+    // Animación de entrada escalonada para las tarjetas
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.style.opacity = '1';
+          e.target.style.transform = 'translateY(0)';
+        }
+      });
+    }, { threshold: 0.08 });
+
+    document.querySelectorAll('.cur-card').forEach((el, i) => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(20px)';
+      el.style.transition = `opacity .55s ${i * 0.07}s ease, transform .55s ${i * 0.07}s ease`;
+      obs.observe(el);
+    });
+  </script>
+{% endblock %}

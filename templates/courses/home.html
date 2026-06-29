@@ -1,0 +1,697 @@
+{% extends "courses/base_cursos.html" %}
+{% load static %}
+
+{% block title %}Centro DHAE — Cursos de Psicología y Crecimiento Humano{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* ── HERO ── */
+  .hero {
+    min-height: 88vh; display: grid; grid-template-columns: 1fr 1fr;
+    align-items: center; gap: 60px;
+    padding: 80px 6% 80px;
+    background: var(--cream);
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; top: -140px; right: -120px;
+    width: 680px; height: 680px; border-radius: 50%;
+    background: radial-gradient(circle, var(--accent2) 0%, transparent 65%);
+    opacity: .38; pointer-events: none;
+  }
+  .hero::after {
+    content: ''; position: absolute; bottom: -100px; left: 3%;
+    width: 360px; height: 360px; border-radius: 50%;
+    background: radial-gradient(circle, var(--sand) 0%, transparent 68%);
+    opacity: .5; pointer-events: none;
+  }
+  .hero-text { position: relative; z-index: 2; }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 5px 16px; border-radius: 999px;
+    background: var(--warm); border: 1px solid var(--sand);
+    font-size: .72rem; font-weight: 500;
+    color: var(--primary); letter-spacing: .1em; text-transform: uppercase;
+    margin-bottom: 22px;
+  }
+  .hero-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); display: inline-block; }
+  .hero h1 {
+    font-family: var(--ff-display);
+    font-size: clamp(2.2rem, 4.8vw, 3.8rem);
+    font-weight: 300; color: var(--dark);
+    line-height: 1.12; margin-bottom: 20px; letter-spacing: -.01em;
+  }
+  .hero-desc {
+    font-size: .94rem; line-height: 1.9;
+    color: color-mix(in srgb, var(--primary) 55%, var(--ink));
+    max-width: 460px; margin-bottom: 36px;
+  }
+  .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
+  .hero-stats {
+    display: flex; gap: 32px; margin-top: 44px; padding-top: 32px;
+    border-top: 1px solid var(--sand);
+  }
+  .hero-stat-val {
+    font-family: var(--ff-display); font-size: 2rem; font-weight: 600;
+    color: var(--dark); line-height: 1;
+  }
+  .hero-stat-lbl { font-size: .74rem; color: var(--accent); font-weight: 500; letter-spacing: .05em; text-transform: uppercase; margin-top: 4px; }
+  .hero-visual { position: relative; z-index: 2; }
+  .hero-img-wrap {
+    position: relative; border-radius: 24px; overflow: hidden;
+    box-shadow: 0 28px 64px color-mix(in srgb, var(--dark) 18%, transparent);
+  }
+  .hero-img-wrap img { width: 100%; display: block; aspect-ratio: 4/3; object-fit: cover; }
+  .hero-img-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(145deg, rgba(160,136,72,.18), rgba(112,152,136,.12));
+  }
+  .hero-float-card {
+    position: absolute; bottom: -24px; left: -24px;
+    background: var(--white); border-radius: 18px; padding: 18px 22px;
+    box-shadow: 0 12px 36px rgba(0,0,0,.12);
+    min-width: 190px;
+    border: 1px solid var(--warm);
+  }
+  .hero-float-card .fc-icon { font-size: 1.4rem; margin-bottom: 6px; }
+  .hero-float-card .fc-val { font-family: var(--ff-display); font-size: 1.6rem; font-weight: 600; color: var(--dark); line-height: 1; }
+  .hero-float-card .fc-lbl { font-size: .73rem; color: var(--accent); font-weight: 500; letter-spacing: .04em; text-transform: uppercase; margin-top: 3px; }
+  .hero-float-card2 {
+    position: absolute; top: -20px; right: -20px;
+    background: var(--primary); border-radius: 18px; padding: 16px 20px;
+    box-shadow: 0 10px 28px color-mix(in srgb, var(--primary) 38%, transparent);
+    min-width: 160px;
+  }
+  .hero-float-card2 .fc-val { font-family: var(--ff-display); font-size: 1.4rem; font-weight: 600; color: #fff; line-height: 1; }
+  .hero-float-card2 .fc-lbl { font-size: .7rem; color: rgba(255,255,255,.75); font-weight: 400; letter-spacing: .04em; margin-top: 3px; }
+
+  /* ── FEATURED CATEGORIES ── */
+  .cats { padding: 80px 6%; background: var(--cream); }
+  .cats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  .cat-card {
+    border-radius: 20px; overflow: hidden; cursor: pointer;
+    background: var(--white);
+    border: 1px solid var(--warm);
+    transition: transform .3s, box-shadow .3s;
+    text-decoration: none;
+  }
+  .cat-card:hover { transform: translateY(-6px); box-shadow: 0 20px 48px rgba(0,0,0,.1); }
+  .cat-thumb {
+    height: 130px; position: relative; overflow: hidden;
+  }
+  .cat-thumb img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+    transition: transform .4s ease;
+  }
+  .cat-card:hover .cat-thumb img { transform: scale(1.05); }
+  .cat-card-body { padding: 18px 20px 20px; }
+  .cat-name { font-family: var(--ff-display); font-size: 1.15rem; font-weight: 400; color: var(--dark); margin-bottom: 6px; }
+  .cat-count { font-size: .76rem; color: var(--accent); font-weight: 500; letter-spacing: .04em; }
+
+  /* ── COURSES GRID ── */
+  .cursos { padding: 80px 6%; background: var(--warm); position: relative; overflow: hidden; }
+  .cursos::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23a08848' fill-opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='1.5'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+  .cur-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; position: relative; z-index: 1; }
+  .cur-card {
+    background: var(--white); border-radius: 20px; overflow: hidden;
+    border: 1px solid rgba(216,200,152,.4);
+    transition: transform .3s, box-shadow .3s;
+  }
+  .cur-card:hover { transform: translateY(-6px); box-shadow: 0 20px 52px rgba(0,0,0,.1); }
+  .cur-thumb {
+    height: 190px; display: flex; align-items: flex-end;
+    padding: 20px; position: relative; overflow: hidden;
+  }
+  .cur-thumb .cur-emoji { font-size: 3rem; position: relative; z-index: 2; }
+  .cur-dur {
+    position: absolute; top: 16px; right: 16px; z-index: 3;
+    background: rgba(255,255,255,.88); backdrop-filter: blur(6px);
+    border-radius: 999px; padding: 4px 12px;
+    font-size: .72rem; font-weight: 500; color: var(--dark);
+  }
+  .cur-badge {
+    position: absolute; top: 16px; left: 16px; z-index: 3;
+    background: var(--accent); color: #fff;
+    border-radius: 999px; padding: 4px 11px;
+    font-size: .68rem; font-weight: 500; letter-spacing: .04em; text-transform: uppercase;
+  }
+  .cur-badge.nuevo { background: var(--primary); }
+  .cur-badge.popular { background: var(--dark); }
+  .cur-body { padding: 22px 24px 24px; }
+  .cur-lvl {
+    display: inline-block; font-size: .68rem; font-weight: 500;
+    letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px;
+  }
+  .cur-body h3 { font-family: var(--ff-display); font-size: 1.25rem; font-weight: 400; color: var(--dark); margin-bottom: 10px; line-height: 1.3; }
+  .cur-body p { font-size: .83rem; line-height: 1.75; color: color-mix(in srgb, var(--primary) 35%, var(--ink)); margin-bottom: 16px; }
+  .cur-meta { display: flex; gap: 16px; margin-bottom: 20px; }
+  .cur-meta span { font-size: .75rem; color: var(--primary); }
+  .cur-foot { display: flex; align-items: center; justify-content: space-between; padding-top: 16px; border-top: 1px solid var(--warm); }
+  .cur-price { font-family: var(--ff-display); font-size: 1.5rem; font-weight: 600; color: var(--dark); }
+  .cur-price span { font-family: var(--ff-body); font-size: .75rem; font-weight: 300; color: var(--accent); }
+  .cur-enroll {
+    padding: 9px 20px; border-radius: 999px;
+    background: var(--primary); color: #fff;
+    font-family: var(--ff-body); font-size: .8rem; font-weight: 500;
+    border: none; cursor: pointer;
+    transition: background .2s, transform .2s;
+    text-decoration: none; display: inline-block;
+  }
+  .cur-enroll:hover { background: var(--dark); transform: translateY(-1px); }
+  .cur-enroll.outline {
+    background: transparent; color: var(--primary);
+    border: 1.5px solid var(--primary);
+  }
+  .cur-enroll.outline:hover { background: var(--primary); color: #fff; }
+
+  /* ── HOW IT WORKS ── */
+  .how { padding: 80px 6%; background: var(--cream); }
+  .how-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; position: relative; }
+  .how-grid::before {
+    content: ''; position: absolute; top: 44px; left: 12%; right: 12%;
+    height: 1px; background: linear-gradient(90deg, transparent, var(--sand) 20%, var(--sand) 80%, transparent);
+    pointer-events: none;
+  }
+  .how-step { text-align: center; }
+  .how-num {
+    width: 72px; height: 72px; border-radius: 50%; margin: 0 auto 20px;
+    background: var(--white); border: 1.5px solid var(--sand);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--ff-display); font-size: 1.8rem; font-weight: 600;
+    color: var(--primary); box-shadow: 0 6px 20px rgba(0,0,0,.06);
+    position: relative; z-index: 1;
+  }
+  .how-step h3 { font-family: var(--ff-display); font-size: 1.15rem; font-weight: 400; color: var(--dark); margin-bottom: 8px; }
+  .how-step p { font-size: .82rem; line-height: 1.8; color: color-mix(in srgb, var(--primary) 35%, var(--ink)); }
+
+  /* ── INSTRUCTORS ── */
+  .instructors { padding: 80px 6%; background: var(--warm); }
+  .inst-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+  .inst-card {
+    background: var(--white); border-radius: 20px; overflow: hidden;
+    border: 1px solid rgba(216,200,152,.4);
+    transition: transform .3s, box-shadow .3s;
+    text-align: center;
+  }
+  .inst-card:hover { transform: translateY(-5px); box-shadow: 0 18px 44px rgba(0,0,0,.09); }
+  .inst-photo {
+    height: 200px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 5rem;
+    position: relative; overflow: hidden;
+  }
+  .inst-photo::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(to bottom, transparent 50%, rgba(255,255,255,.5));
+  }
+  .inst-body { padding: 24px 24px 28px; }
+  .inst-name { font-family: var(--ff-display); font-size: 1.35rem; font-weight: 400; color: var(--dark); margin-bottom: 4px; }
+  .inst-title { font-size: .76rem; color: var(--accent); font-weight: 500; letter-spacing: .04em; margin-bottom: 14px; }
+  .inst-bio { font-size: .82rem; line-height: 1.75; color: color-mix(in srgb, var(--primary) 35%, var(--ink)); margin-bottom: 16px; }
+  .inst-tags { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+  .inst-tag {
+    padding: 4px 12px; border-radius: 999px; font-size: .69rem; font-weight: 500;
+    background: var(--warm); color: var(--primary); border: 1px solid var(--sand);
+  }
+
+  /* ── TESTIMONIALS ── */
+  .testimonials {
+    padding: 80px 6%;
+    background: linear-gradient(135deg, #181004 0%, #403010 50%, #604818 100%);
+    position: relative; overflow: hidden;
+  }
+  .testimonials::before {
+    content: ''; position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23ffffff' fill-opacity='0.035'%3E%3Ccircle cx='30' cy='30' r='1.5'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+  .test-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; position: relative; z-index: 1; }
+  .test-card {
+    background: rgba(255,255,255,.07);
+    border: 1px solid rgba(216,200,152,.15);
+    border-radius: 20px; padding: 28px;
+    backdrop-filter: blur(8px);
+    transition: background .3s, transform .3s;
+    position: relative;
+  }
+  .test-card:hover { background: rgba(255,255,255,.11); transform: translateY(-4px); }
+  .test-quote { font-size: 2.5rem; line-height: 1; color: var(--sand); font-family: var(--ff-display); margin-bottom: 14px; opacity: .6; }
+  .test-text { font-family: var(--ff-display); font-size: 1.05rem; font-style: italic; color: rgba(255,243,230,.9); line-height: 1.65; margin-bottom: 20px; font-weight: 300; }
+  .test-stars { color: var(--primary); font-size: .85rem; margin-bottom: 16px; }
+  .test-person { display: flex; align-items: center; gap: 12px; }
+  .test-avatar {
+    width: 44px; height: 44px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem; font-weight: 500; flex-shrink: 0;
+  }
+  .test-name { font-size: .85rem; font-weight: 500; color: rgba(255,243,230,.95); }
+  .test-role { font-size: .74rem; color: var(--accent2); }
+
+  /* ── CTA BANNER ── */
+  .cta-banner {
+    padding: 88px 6%;
+    background: var(--cream);
+    display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 60px;
+  }
+  .cta-banner h2 {
+    font-family: var(--ff-display);
+    font-size: clamp(1.8rem, 3.2vw, 2.8rem); font-weight: 300; color: var(--dark);
+    line-height: 1.2; margin-bottom: 12px;
+  }
+  .cta-banner p { font-size: .9rem; line-height: 1.85; color: color-mix(in srgb, var(--primary) 45%, var(--ink)); max-width: 480px; }
+  .cta-actions { display: flex; flex-direction: column; gap: 12px; align-items: flex-end; }
+
+  /* ── NEWSLETTER ── */
+  .newsletter {
+    background: linear-gradient(135deg, #181004 0%, #403010 50%, #604818 100%);
+    padding: 72px 6%; text-align: center; position: relative; overflow: hidden;
+  }
+  .newsletter::before {
+    content: ''; position: absolute; top: -80px; left: 50%;
+    transform: translateX(-50%); width: 600px; height: 300px;
+    background: radial-gradient(ellipse, color-mix(in srgb, var(--accent) 20%, transparent) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .newsletter h2 { font-family: var(--ff-display); font-size: clamp(1.6rem, 2.8vw, 2.4rem); font-weight: 300; color: #fff; margin-bottom: 12px; position: relative; }
+  .newsletter p { font-size: .88rem; color: rgba(255,243,230,.72); line-height: 1.8; margin-bottom: 36px; position: relative; }
+  .nl-form { display: flex; gap: 10px; max-width: 460px; margin: 0 auto; position: relative; }
+  .nl-input {
+    flex: 1; padding: 13px 20px; border-radius: 999px;
+    background: rgba(255,255,255,.1); border: 1px solid rgba(216,200,152,.25);
+    color: #fff; font-family: var(--ff-body); font-size: .88rem;
+    outline: none; transition: border-color .2s, background .2s;
+  }
+  .nl-input::placeholder { color: rgba(216,200,152,.5); }
+  .nl-input:focus { border-color: var(--primary); background: rgba(255,255,255,.14); }
+  .nl-btn {
+    padding: 13px 26px; border-radius: 999px; flex-shrink: 0;
+    background: var(--primary); color: #fff;
+    font-family: var(--ff-body); font-size: .85rem; font-weight: 500;
+    border: none; cursor: pointer;
+    transition: background .2s, transform .2s;
+  }
+  .nl-btn:hover { background: var(--dark); transform: translateY(-1px); }
+
+  /* ── RESPONSIVE HOME ── */
+  @media (max-width: 1024px) {
+    .cats-grid { grid-template-columns: repeat(2, 1fr); }
+    .cur-grid { grid-template-columns: repeat(2, 1fr); }
+    .how-grid { grid-template-columns: repeat(3, 1fr) !important; }
+    .how-grid::before { display: none; }
+  }
+  @media (max-width: 768px) {
+    .hero { grid-template-columns: 1fr; min-height: auto; padding: 52px 5% 60px; gap: 40px; text-align: center; }
+    .hero::before, .hero::after { display: none; }
+    .hero-float-card, .hero-float-card2 { display: none; }
+    .hero-desc { margin-left: auto; margin-right: auto; }
+    .hero-badge { margin-left: auto; margin-right: auto; }
+    .hero-actions { justify-content: center; }
+    .hero-stats { gap: 20px; justify-content: center; text-align: left; }
+    .cats-grid, .cur-grid, .inst-grid, .test-grid { grid-template-columns: 1fr; }
+    .how-grid { grid-template-columns: 1fr !important; gap: 36px; max-width: 360px; margin: 0 auto; }
+    .how-grid::before { display: none; }
+    .cta-banner { grid-template-columns: 1fr; text-align: center; }
+    .cta-actions { align-items: center; }
+    .nl-form { flex-direction: column; }
+  }
+
+  /* ── ANIMACIONES HERO ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .hero-text > * { animation: fadeUp .7s ease both; }
+  .hero-badge { animation-delay: 0s; }
+  .hero h1 { animation-delay: .1s; }
+  .hero-desc { animation-delay: .2s; }
+  .hero-actions { animation-delay: .3s; }
+  .hero-stats { animation-delay: .4s; }
+  .hero-visual { animation: fadeUp .8s .2s ease both; }
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-text">
+      <div class="hero-badge">
+        <span class="dot"></span>
+        Plataforma de formación continua
+      </div>
+      <h1>
+        Transforma tu vida a través del
+        <em>conocimiento psicológico</em>
+      </h1>
+      <p class="hero-desc">
+        Cursos especializados en psicología, crecimiento humano e inteligencia emocional.
+        Aprende con expertos certificados a tu propio ritmo.
+      </p>
+      <div class="hero-actions">
+        <a href="#cursos" class="btn-gold">
+          <i class="fas fa-play-circle" style="margin-right:8px"></i>Explorar cursos
+        </a>
+        <a href="#como-funciona" class="btn-outline">
+          ¿Cómo funciona?
+        </a>
+      </div>
+      <div class="hero-stats">
+        <div>
+          <div class="hero-stat-val">{{ cursos|length }}+</div>
+          <div class="hero-stat-lbl">Cursos disponibles</div>
+        </div>
+        <div>
+          <div class="hero-stat-val">100%</div>
+          <div class="hero-stat-lbl">En línea</div>
+        </div>
+        <div>
+          <div class="hero-stat-val">Expertos</div>
+          <div class="hero-stat-lbl">Instructores certificados</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-img-wrap">
+        <img src="https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?w=800&q=80" alt="Aprendizaje psicológico"/>
+        <div class="hero-img-overlay"></div>
+      </div>
+      <div class="hero-float-card">
+        <div class="fc-icon">📚</div>
+        <div class="fc-val">{{ cursos|length }} cursos</div>
+        <div class="fc-lbl">disponibles ahora</div>
+      </div>
+      <div class="hero-float-card2">
+        <div class="fc-val" style="display:flex;align-items:center;gap:6px"><span style="font-size:1rem">🎓</span>100%</div>
+        <div class="fc-lbl">en línea</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CATEGORIES -->
+  <section class="cats" id="categorias">
+    <div class="sec-head">
+      <span class="sec-tag">Áreas de estudio</span>
+      <h2>Explora por <em>área</em></h2>
+      <p>Desde el autoconocimiento hasta el liderazgo profesional, encuentra el camino que te inspira.</p>
+    </div>
+    <div class="cats-grid">
+      <a class="cat-card" href="{% url 'courses:curso_catalogo' %}">
+        <div class="cat-thumb">
+          {# ↓ Cambia esta ruta por la imagen de Psicología Clínica #}
+          <img src="{% static 'img/Terapia-psicologica.jpg' %}" alt="Psicología Clínica">
+        </div>
+        <div class="cat-card-body">
+          <div class="cat-name">Psicología Clínica</div>
+          <div class="cat-count">Ver cursos →</div>
+        </div>
+      </a>
+      <a class="cat-card" href="{% url 'courses:curso_catalogo' %}">
+        <div class="cat-thumb">
+          {# ↓ Cambia esta ruta por la imagen de Crecimiento Personal #}
+          <img src="{% static 'img/banner/crecimiento.jpg' %}" alt="Crecimiento Personal">
+        </div>
+        <div class="cat-card-body">
+          <div class="cat-name">Crecimiento Personal</div>
+          <div class="cat-count">Ver cursos →</div>
+        </div>
+      </a>
+      <a class="cat-card" href="{% url 'courses:curso_catalogo' %}">
+        <div class="cat-thumb">
+          {# ↓ Cambia esta ruta por la imagen de Psicología Organizacional #}
+          <img src="{% static 'img/vitaly-gariev-l0E0Y1TdzxE-unsplash.jpg' %}" alt="Psicología Organizacional">
+        </div>
+        <div class="cat-card-body">
+          <div class="cat-name">Psicología Organizacional</div>
+          <div class="cat-count">Ver cursos →</div>
+        </div>
+      </a>
+      <a class="cat-card" href="{% url 'courses:curso_catalogo' %}">
+        <div class="cat-thumb">
+          {# ↓ Cambia esta ruta por la imagen de Terapia Familiar #}
+          <img src="{% static 'img/t._familiar-5144.webp' %}" alt="Terapia Familiar">
+        </div>
+        <div class="cat-card-body">
+          <div class="cat-name">Terapia Familiar</div>
+          <div class="cat-count">Ver cursos →</div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- FEATURED COURSES -->
+  <section class="cursos" id="cursos">
+    <div class="sec-head">
+      <span class="sec-tag">Formación especializada</span>
+      <h2>Cursos <em>destacados</em></h2>
+      <p>Programas diseñados por psicólogos certificados para tu crecimiento personal y profesional.</p>
+    </div>
+
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:36px;position:relative;z-index:1;">
+      <span style="font-size:.8rem;color:color-mix(in srgb,var(--primary) 50%,var(--ink))">
+        {% if cursos %}
+          Mostrando <strong style="color:var(--dark)">{{ cursos|length }}</strong>
+          curso{% if cursos|length != 1 %}s{% endif %} publicado{% if cursos|length != 1 %}s{% endif %}
+        {% endif %}
+      </span>
+      <a href="{% url 'courses:curso_catalogo' %}" class="btn-outline" style="padding:7px 20px;font-size:.8rem;">
+        Ver catálogo completo <i class="fas fa-arrow-right" style="margin-left:6px;font-size:.75rem;"></i>
+      </a>
+    </div>
+
+    <div class="cur-grid">
+      {% for curso in cursos|slice:":6" %}
+      <article class="cur-card">
+        <div class="cur-thumb" {% if not curso.imagen %}style="background:linear-gradient(135deg,var(--accent2),var(--accent))"{% endif %}>
+          {% if curso.imagen %}
+            <img src="{{ curso.imagen.url }}" alt="{{ curso.titulo }}" style="width:100%;height:100%;object-fit:cover;display:block;">
+          {% else %}
+            <span class="cur-emoji">📘</span>
+          {% endif %}
+          {% if forloop.counter <= 3 %}
+            <span class="cur-badge nuevo">Nuevo</span>
+          {% endif %}
+        </div>
+        <div class="cur-body">
+          <div class="cur-lvl">
+            <i class="fas fa-user-tie" style="margin-right:5px;opacity:.7;"></i>
+            {% if curso.instructor %}{{ curso.instructor }}{% else %}Instructor por asignar{% endif %}
+          </div>
+          <h3>{{ curso.titulo }}</h3>
+          <p>{{ curso.descripcion|striptags|truncatechars:115 }}</p>
+          <div class="cur-meta">
+            <span><i class="fas fa-play-circle" style="margin-right:5px;opacity:.6"></i>
+              {{ curso.lecciones.count }} lecci{% if curso.lecciones.count == 1 %}ón{% else %}ones{% endif %}
+            </span>
+            <span><i class="fas fa-calendar-alt" style="margin-right:5px;opacity:.6"></i>
+              {{ curso.creado_en|date:"M Y" }}
+            </span>
+          </div>
+          <div class="cur-foot">
+            <div style="font-size:.75rem;color:var(--accent);">
+              <i class="fas fa-users" style="margin-right:4px;opacity:.7;"></i>
+              {{ curso.inscripciones.count }} inscrit{% if curso.inscripciones.count == 1 %}o{% else %}os{% endif %}
+            </div>
+            <a href="{% url 'courses:curso_detail' slug=curso.slug %}" class="cur-enroll">
+              Ver curso
+            </a>
+          </div>
+        </div>
+      </article>
+      {% empty %}
+      <div style="grid-column:1/-1;text-align:center;padding:64px 24px;">
+        <div style="font-size:3rem;margin-bottom:16px;">🌱</div>
+        <h3 style="font-family:var(--ff-display);font-weight:300;color:var(--dark);margin-bottom:8px;">Próximamente más cursos</h3>
+        <p style="font-size:.88rem;color:var(--accent);">Estamos preparando contenido de calidad. ¡Vuelve pronto!</p>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="how" id="como-funciona">
+    <div class="sec-head">
+      <span class="sec-tag">Simple y efectivo</span>
+      <h2>¿Cómo <em>funciona</em>?</h2>
+      <p>Cinco pasos para comenzar tu formación, sin complicaciones ni pagos en línea.</p>
+    </div>
+    <div class="how-grid" style="grid-template-columns:repeat(5,1fr);">
+      <div class="how-step">
+        <div class="how-num">1</div>
+        <h3>Elige tu curso</h3>
+        <p>Explora nuestro catálogo y elige el programa que mejor se adapte a tu objetivo.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-num">2</div>
+        <h3>Realiza tu pago</h3>
+        <p>Paga por transferencia o efectivo directamente. Te compartimos los datos al contactarnos.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-num">3</div>
+        <h3>Recibe tus accesos</h3>
+        <p>Te enviamos usuario y contraseña temporal a tu correo o teléfono en menos de 24 horas.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-num">4</div>
+        <h3>Inicia sesión</h3>
+        <p>Entra a la plataforma con tus credenciales. Puedes cambiar tu contraseña cuando quieras.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-num">5</div>
+        <h3>Aprende y certifícate</h3>
+        <p>Avanza a tu ritmo entre lecciones en video y al completar el curso descarga tu constancia.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- INSTRUCTORS -->
+  <section class="instructors" id="instructores">
+    <div class="sec-head">
+      <span class="sec-tag">Nuestro equipo</span>
+      <h2>Aprende con <em>expertos</em></h2>
+      <p>Psicólogos certificados con experiencia clínica y organizacional que te acompañan en cada paso.</p>
+    </div>
+    <div class="inst-grid">
+      <div class="inst-card">
+        <div class="inst-photo" style="background:linear-gradient(145deg,#b8d0c8,#709888)">🧑‍⚕️</div>
+        <div class="inst-body">
+          <div class="inst-name">Dra. Valeria Montoya</div>
+          <div class="inst-title">Psicóloga Clínica · 14 años de experiencia</div>
+          <p class="inst-bio">Especialista en terapia cognitivo-conductual y regulación emocional. Docente universitaria y autora de dos libros sobre bienestar mental.</p>
+          <div class="inst-tags">
+            <span class="inst-tag">Inteligencia Emocional</span>
+            <span class="inst-tag">Ansiedad</span>
+            <span class="inst-tag">Mindfulness</span>
+          </div>
+        </div>
+      </div>
+      <div class="inst-card">
+        <div class="inst-photo" style="background:linear-gradient(145deg,#f0e8d4,#d8c898)">👨‍🏫</div>
+        <div class="inst-body">
+          <div class="inst-name">Mtro. Rodrigo Salinas</div>
+          <div class="inst-title">Psicólogo Organizacional · Consultor</div>
+          <p class="inst-bio">Experto en liderazgo, cultura organizacional y evaluación psicométrica. Ha colaborado con más de 60 empresas en México y Latinoamérica.</p>
+          <div class="inst-tags">
+            <span class="inst-tag">Liderazgo</span>
+            <span class="inst-tag">Psicometría</span>
+            <span class="inst-tag">Recursos Humanos</span>
+          </div>
+        </div>
+      </div>
+      <div class="inst-card">
+        <div class="inst-photo" style="background:linear-gradient(145deg,#c8a890,#a07060)">👩‍💼</div>
+        <div class="inst-body">
+          <div class="inst-name">Lic. Andrea Fuentes</div>
+          <div class="inst-title">Terapeuta Familiar · Orientadora Vocacional</div>
+          <p class="inst-bio">Especialista en vínculos afectivos, crianza consciente y orientación vocacional. Facilitadora de grupos terapéuticos desde 2015.</p>
+          <div class="inst-tags">
+            <span class="inst-tag">Terapia Familiar</span>
+            <span class="inst-tag">Apego</span>
+            <span class="inst-tag">Vocacional</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="testimonials" id="testimonios">
+    <div class="sec-head">
+      <span class="sec-tag" style="color:var(--accent2)">Lo que dicen nuestros alumnos</span>
+      <h2 style="color:#fff;">Historias de <em style="color:var(--accent2)">transformación</em></h2>
+      <p style="color:rgba(255,243,230,.75)">Personas que ya dieron el primer paso hacia su bienestar y desarrollo con nuestros programas.</p>
+    </div>
+    <div class="test-grid">
+      <div class="test-card">
+        <div class="test-quote">"</div>
+        <p class="test-text">El curso de Autoconocimiento cambió profundamente mi relación conmigo misma. Ahora entiendo mis patrones emocionales y puedo gestionarlos con herramientas reales.</p>
+        <div class="test-stars">★★★★★</div>
+        <div class="test-person">
+          <div class="test-avatar" style="background:var(--warm);color:var(--primary)">P</div>
+          <div>
+            <div class="test-name">Paola Ramírez</div>
+            <div class="test-role">Diseñadora · Ciudad de México</div>
+          </div>
+        </div>
+      </div>
+      <div class="test-card">
+        <div class="test-quote">"</div>
+        <p class="test-text">El programa de Liderazgo Consciente fue exactamente lo que necesitaba para mejorar mi gestión de equipo. La calidad del contenido es excepcional.</p>
+        <div class="test-stars">★★★★★</div>
+        <div class="test-person">
+          <div class="test-avatar" style="background:var(--accent2);color:var(--accent)">C</div>
+          <div>
+            <div class="test-name">Carlos Mendoza</div>
+            <div class="test-role">Gerente de RH · Monterrey</div>
+          </div>
+        </div>
+      </div>
+      <div class="test-card">
+        <div class="test-quote">"</div>
+        <p class="test-text">Los instructores combinan teoría sólida con aplicación práctica. Me sorprendió lo accesible y profundo que puede ser el aprendizaje psicológico.</p>
+        <div class="test-stars">★★★★★</div>
+        <div class="test-person">
+          <div class="test-avatar" style="background:rgba(255,255,255,.15);color:#fff">L</div>
+          <div>
+            <div class="test-name">Laura Soto</div>
+            <div class="test-role">Psicóloga en formación · Guadalajara</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA BANNER -->
+  <section class="cta-banner" id="contacto">
+    <div>
+      <span class="sec-tag">¿Listo para comenzar?</span>
+      <h2>Invierte en tu bienestar y desarrollo <em>hoy</em></h2>
+      <p>Únete a nuestra comunidad de estudiantes que ya transformaron su vida con nuestros programas. Tu primera sesión exploratoria es totalmente gratuita.</p>
+    </div>
+    <div class="cta-actions">
+      <a href="#" class="btn-gold" style="text-align:center;min-width:200px">
+        <i class="fas fa-rocket" style="margin-right:8px"></i>Empezar gratis
+      </a>
+      <a href="#" class="btn-outline" style="text-align:center;min-width:200px">
+        <i class="fas fa-calendar-alt" style="margin-right:8px"></i>Agendar consulta
+      </a>
+    </div>
+  </section>
+
+  <!-- NEWSLETTER -->
+  <section class="newsletter">
+    <h2>Recibe contenido que <em style="color:var(--accent2)">transforma</em></h2>
+    <p>Artículos de psicología, herramientas de crecimiento personal y novedades sobre nuevos cursos,<br>directamente en tu correo. Sin spam, solo valor.</p>
+    <div class="nl-form">
+      <input class="nl-input" type="email" placeholder="tucorreo@ejemplo.com"/>
+      <button class="nl-btn">Suscribirme</button>
+    </div>
+  </section>
+
+{% endblock %}
+
+
+{% block extra_js %}
+<script>
+  // Scroll animations
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.opacity = '1';
+        e.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.cur-card, article.cur-card, .cat-card, .how-step, .inst-card, .test-card').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px)';
+    el.style.transition = 'opacity .6s ease, transform .6s ease';
+    obs.observe(el);
+  });
+</script>
+{% endblock %}
