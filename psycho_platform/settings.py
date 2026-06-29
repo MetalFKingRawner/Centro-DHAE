@@ -70,17 +70,23 @@ WSGI_APPLICATION = 'psycho_platform.wsgi.application'
 
 # Database
 
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.postgresql',
+#        'NAME': 'psyco',
+#        'USER': 'postgres',
+#        'PASSWORD': 'hangar81',
+#        'HOST': 'localhost',  # O la dirección de tu servidor de base de datos
+#        'PORT': '5432',       # Puerto por defecto de PostgreSQL
+#    }
+#}
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'psyco',
-        'USER': 'postgres',
-        'PASSWORD': 'hangar81',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
+    'default': dj_database_url.config(
+        default=f"postgresql://neondb_owner:npg_QsjPqh9t1oYr@ep-crimson-band-a6g42xbo-pooler.us-west-2.aws.neon.tech/neondb",
+        conn_max_age=600,
+        ssl_require=True  # Neon y Railway pueden requerir SSL
+    )
 }
-
 
 # Password validation
 
