@@ -32,7 +32,7 @@
                     <div class="alert alert-danger">
                         {% for field, errors in form.errors.items %}
                             {% for error in errors %}
-                                <p class="mb-1">{{ error }}</p>
+                                <p class="mb-1"><strong>{{ field|capfirst }}:</strong> {{ error }}</p>
                             {% endfor %}
                         {% endfor %}
                     </div>
@@ -61,6 +61,7 @@
                         <input type="password" name="password1" 
                                class="auth-input {% if form.password1.errors %}is-invalid{% endif %}"
                                placeholder="Contraseña"
+                               autocomplete="new-password"
                                required>
                     </div>
 
@@ -69,33 +70,24 @@
                         <input type="password" name="password2" 
                                class="auth-input {% if form.password2.errors %}is-invalid{% endif %}"
                                placeholder="Confirmar contraseña"
+                               autocomplete="new-password"
                                required>
                     </div>
 
                     <div class="auth-field">
                         <i class="fas fa-id-card input-icon"></i>
-                        <input type="text" name="first_name" 
-                               class="auth-input"
-                               placeholder="Nombre(s)"
-                               value="{{ form.first_name.value|default:'' }}"
-                               required>
-                    </div>
-
-                    <div class="auth-field">
-                        <i class="fas fa-id-card input-icon"></i>
-                        <input type="text" name="last_name" 
-                               class="auth-input"
-                               placeholder="Apellidos"
-                               value="{{ form.last_name.value|default:'' }}"
+                        <input type="text" name="full_name" 
+                               class="auth-input {% if form.full_name.errors %}is-invalid{% endif %}"
+                               placeholder="Nombre completo (Ej: Juan Pérez López)"
+                               value="{{ form.full_name.value|default:'' }}"
                                required>
                     </div>
 
                     <div class="auth-field">
                         <i class="fas fa-calendar-alt input-icon"></i>
-                        <input type="number" name="age" 
-                               class="auth-input {% if form.age.errors %}is-invalid{% endif %}"
-                               placeholder="Edad"
-                               value="{{ form.age.value|default:'' }}">
+                        <input type="date" name="date_of_birth" 
+                               class="auth-input {% if form.date_of_birth.errors %}is-invalid{% endif %}"
+                               value="{{ form.date_of_birth.value|default:'' }}">
                     </div>
 
                     <div class="auth-field">
@@ -105,7 +97,16 @@
                             <option value="M" {% if form.gender.value == 'M' %}selected{% endif %} style="color: black;">Masculino</option>
                             <option value="F" {% if form.gender.value == 'F' %}selected{% endif %} style="color: black;">Femenino</option>
                             <option value="O" {% if form.gender.value == 'O' %}selected{% endif %} style="color: black;">Otro</option>
+                            <option value="N" {% if form.gender.value == 'N' %}selected{% endif %} style="color: black;">Prefiero no decir</option>
                         </select>
+                    </div>
+
+                    <div class="auth-field">
+                        <i class="fas fa-university input-icon"></i>
+                        <input type="text" name="institution" 
+                               class="auth-input {% if form.institution.errors %}is-invalid{% endif %}"
+                               placeholder="Institución o Empresa"
+                               value="{{ form.institution.value|default:'' }}">
                     </div>
 
                     <div class="auth-field">
@@ -137,4 +138,40 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const form = document.querySelector('.auth-form');
+    if (!form) return;
+
+    // Nombre de la "caja" donde guardaremos los datos en el navegador
+    const storageKey = 'psymetrics_signup_form';
+
+    // 1. Recuperar datos guardados
+    const savedData = JSON.parse(localStorage.getItem(storageKey) || '{}');
+    
+    // Seleccionamos todos los campos EXCEPTO las contraseñas y el token de seguridad
+    const inputs = form.querySelectorAll('input:not([type="password"]):not([name="csrfmiddlewaretoken"]), select');
+    
+    inputs.forEach(input => {
+        // Si el campo está vacío y tenemos algo guardado, lo rellenamos
+        if (!input.value && savedData[input.name]) {
+            input.value = savedData[input.name];
+        }
+
+        // 2. Guardar datos cada vez que el usuario escribe o cambia una opción
+        input.addEventListener('input', function() {
+            const currentData = JSON.parse(localStorage.getItem(storageKey) || '{}');
+            currentData[this.name] = this.value;
+            localStorage.setItem(storageKey, JSON.stringify(currentData));
+        });
+    });
+
+    // 3. Limpiar los datos si el formulario se envía correctamente
+    form.addEventListener('submit', function() {
+        localStorage.removeItem(storageKey);
+    });
+});
+</script>
+
 {% endblock %}
