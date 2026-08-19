@@ -15,6 +15,21 @@ from django.shortcuts import get_object_or_404
 from django.contrib import messages
 from core.models import ConfiguracionPlataforma
 from django.urls import reverse
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+from django.http import JsonResponse
+
+@login_required
+@require_POST
+def change_password_ajax(request):
+    form = PasswordChangeForm(user=request.user, data=request.POST)
+    if form.is_valid():
+        user = form.save()
+        update_session_auth_hash(request, user)  # evita cerrar la sesión al cambiar el hash
+        return JsonResponse({'success': True, 'message': 'Contraseña actualizada correctamente.'})
+    return JsonResponse({'success': False, 'errors': form.errors.get_json_data()}, status=400)
 
 def signup(request):
     # ── CANDADO DE SEGURIDAD ──
