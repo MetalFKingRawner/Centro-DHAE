@@ -56,4 +56,42 @@ def nosotros(request):
     return render(request, 'landing/nosotros.html')
 
 def servicios(request):
-    return render(request, 'landing/servicios.html')
+    if request.method == 'POST':
+        form = ContactoForm(request.POST)
+        if form.is_valid():
+            nombre = form.cleaned_data['nombre']
+            email = form.cleaned_data['email']
+            telefono = form.cleaned_data.get('telefono', '')
+            servicio = form.cleaned_data.get('servicio', '')
+            mensaje_cliente = form.cleaned_data['mensaje']
+
+            asunto = f"Solicitud de información (Servicios): {nombre}"
+            mensaje = f"""
+Has recibido un nuevo mensaje desde la página de Servicios:
+
+Nombre: {nombre}
+Correo electrónico: {email}
+Teléfono: {telefono if telefono else 'No proporcionado'}
+Servicio de interés: {servicio if servicio else 'No especificado'}
+
+Mensaje:
+{mensaje_cliente}
+            """
+
+            send_mail(
+                asunto,
+                mensaje,
+                settings.DEFAULT_FROM_EMAIL,
+                [settings.ADMIN_EMAIL],
+                fail_silently=False,
+            )
+            messages.success(request, '¡Gracias por escribirnos! Hemos recibido tu solicitud correctamente.')
+            
+            # Cambia a 'landing:servicios' si usas namespace en urls.py
+            return redirect('servicios')
+        else:
+            messages.error(request, 'Por favor corrige los datos ingresados en el formulario.')
+    else:
+        form = ContactoForm()
+
+    return render(request, 'landing/servicios.html', {'form': form})
