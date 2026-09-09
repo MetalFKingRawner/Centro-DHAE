@@ -193,7 +193,7 @@ EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', 'odup duin ixxe wrdf
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 CONTACT_FORM_RECIPIENT = 'magnesyst@centrodhae.com'  # Dirección que recibirá los mensajes del formulario
 
-ADMIN_EMAIL = 'contacto.centrodhae@gmail.com'
+ADMIN_EMAIL = 'magnesyst@gmail.com'
 
 SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
 
