@@ -184,9 +184,14 @@ LOGIN_REDIRECT_URL = 'tests:index'
 LOGIN_URL = '/login/'
 
 # Configuración de email para desarrollo (verás los correos en la consola)
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-DEFAULT_FROM_EMAIL = 'no-reply@centrodhae.com'
-ADMIN_EMAIL = 'admin@centrodhae.com'   # cámbialo por el email real
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'contacto.centrodhae@gmail.com')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', 'odup duin ixxe wrdfs')
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+CONTACT_FORM_RECIPIENT = 'magnesyst@centrodhae.com'  # Dirección que recibirá los mensajes del formulario
 
 SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
 
