@@ -140,7 +140,7 @@ CKEDITOR_CONFIGS = {
             ['Font', 'FontSize'],
             ['Bold', 'Italic', 'Underline', 'Strike'],
             ['TextColor', 'BGColor'],
-            '/'
+            '/',
             ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent'],
             ['JustifyLeft', 'JustifyCenter', 'JustifyRight'],
             ['Link', 'Unlink'],
