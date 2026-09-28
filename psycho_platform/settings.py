@@ -5,17 +5,27 @@ import os
 import cloudinary
 
 BASE_DIR = Path(__file__).resolve().parent.parent 
-print("BASE_DIR:", BASE_DIR)
-print("Templates path:", BASE_DIR / 'templates')
 
+SECRET_KEY = os.environ.ge('DJANGO_SECRET_KEY')
 
-SECRET_KEY = 'django-insecure-76l$=a@sb41v+p3*w69w(ix-c5zjgit)@#!r%pwb=j98vs4(vm'
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-DEBUG = False
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'centrodhae.com.mx', 'www.centrodhae.com.mx']
+RENDER_HOST = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_HOST:
+    ALLOWED_HOSTS.append(RENDER_HOST)
 
-ALLOWED_HOSTS = ['*']
+CSRF_TRUSTED_ORIGINS = ['https://centrodhae.com.mx', 'https://www.centrodhae.com.mx']
+if RENDER_HOST:
+    CSRF_TRUSTED_ORIGINS.append(f'https://{RENDER_HOST}')
 
-
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = 3600
+    
 # Application definition
 
 INSTALLED_APPS = [
@@ -24,8 +34,8 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',  # ← primero staticfiles
-    'cloudinary_storage',          # ← después
+    'django.contrib.staticfiles',
+    'cloudinary_storage',
     'cloudinary',
     'ckeditor',
     'embed_video',
@@ -39,7 +49,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',  # ← esta línea falta
+    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -75,23 +85,11 @@ TEMPLATES = [
 WSGI_APPLICATION = 'psycho_platform.wsgi.application'
 
 
-# Database
-
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.postgresql',
-#        'NAME': 'psyco',
-#        'USER': 'postgres',
-#        'PASSWORD': 'hangar81',
-#        'HOST': 'localhost',  # O la dirección de tu servidor de base de datos
-#        'PORT': '5432',       # Puerto por defecto de PostgreSQL
-#    }
-#}
 DATABASES = {
     'default': dj_database_url.config(
         default=f"postgresql://neondb_owner:npg_QsjPqh9t1oYr@ep-crimson-band-a6g42xbo-pooler.us-west-2.aws.neon.tech/neondb",
         conn_max_age=600,
-        ssl_require=True  # Neon y Railway pueden requerir SSL
+        ssl_require=True 
     )
 }
 
@@ -139,18 +137,15 @@ CKEDITOR_CONFIGS = {
         'skin': 'moono-lisa',
         'toolbar': 'dhae_toolbar',
         'toolbar_dhae_toolbar': [
-            # Fila 1: fuente, tamaño, estilos básicos
             ['Font', 'FontSize'],
             ['Bold', 'Italic', 'Underline', 'Strike'],
             ['TextColor', 'BGColor'],
-            '/',  # salto de fila
-            # Fila 2: párrafo y listas
+            '/'
             ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent'],
             ['JustifyLeft', 'JustifyCenter', 'JustifyRight'],
             ['Link', 'Unlink'],
             ['Image', 'Table', 'HorizontalRule'],
             ['RemoveFormat', 'Maximize'],
-            # Sin 'Source' (Fuente HTML) ni 'Styles'
         ],
         'font_names': (
             'Arial/Arial, Helvetica, sans-serif;'
@@ -164,10 +159,10 @@ CKEDITOR_CONFIGS = {
         'width': '100%',
         'height': 300,
         'removePlugins': 'stylesheetparser,exportpdf',
-        'extraPlugins': 'font',         # necesario para el combo Font
+        'extraPlugins': 'font',
         'removeButtons': '',
         'forcePasteAsPlainText': False,
-        'allowedContent': True,         # permite todo el HTML que genere el editor
+        'allowedContent': True, 
     }
 }
 
@@ -178,12 +173,9 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'users.CustomUser'
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-LOGIN_REDIRECT_URL = 'tests:index'
 LOGIN_REDIRECT_URL = 'tests:index'
 LOGIN_URL = '/login/'
 
-# Configuración de email para desarrollo (verás los correos en la consola)
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
@@ -191,7 +183,7 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'contacto.centrodhae@gmail.com')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', 'odup duin ixxe wrdfs')
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-CONTACT_FORM_RECIPIENT = 'magnesyst@centrodhae.com'  # Dirección que recibirá los mensajes del formulario
+CONTACT_FORM_RECIPIENT = 'magnesyst@centrodhae.com'
 
 ADMIN_EMAIL = 'magnesyst@gmail.com'
 
@@ -207,12 +199,10 @@ LOGGING = {
     },
     'root': {
         'handlers': ['console'],
-        'level': 'DEBUG',
+        'level': 'INFO',
     },
 }
 
-# Añade al final del archivo
-# Pon esto:
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
@@ -222,5 +212,4 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
 }
 
-# Esto hace que todos los uploads vayan a Cloudinary
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
